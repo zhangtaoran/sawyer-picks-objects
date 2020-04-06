@@ -34,4 +34,5 @@ This is the computer vision node that reads in two images captured from differen
 The depthsensing node also used the camera matrices provided from the calibration.py script in the scripts directory.  With this script, you can load about 15 images from that camera with a grided image in them and it will print the camera matrices to the screen, which were saved in the depthsensing node.  These camera matrices would have to be updated for each camera.
 
 
-
+## Testing using webcam
+Needed packages: cv_camera camera_calibration image_proc stereo_image_proc image_view dynamic_reconfigure

@@ -1,0 +1,12 @@
+<launch>
+  <!-- Argument for device id -->
+  <arg name="cam1" value="0" />
+  <!-- Publisher node -->
+  <node pkg="cv_camera" type="cv_camera_node" name="camera1"  args="$(arg cam1)" >
+    <!-- <remap from="cv_camera/image_raw" to="camera1/image_raw" /> -->
+  </node>
+  <!-- Subscriber node -->
+  <node pkg="image_proc" type="image_proc" name="image_proc" >
+    <!-- <remap from="camera1/image_raw" to="image_rect" /> -->
+  </node>
+</launch>
