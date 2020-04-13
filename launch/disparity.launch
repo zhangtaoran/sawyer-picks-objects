@@ -1,0 +1,18 @@
+<launch>
+  <!-- stereo image processing node -->
+  <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_process" ns="narrow_stereo_textured">
+  </node>
+  <!-- parameter tuning node -->
+  <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="reconfigure">
+  </node>
+  <!-- image viewing node -->
+  <node pkg="image_view" type="stereo_view" name="stereo_image_view">
+  <!-- We need to do these remap to use the data from the rosbag file. -->
+    <remap from="stereo" to="narrow_stereo_textured" />
+    <remap from="image" to="image_rect" />
+  </node>
+  <!-- node to play rosbag-->
+  <node pkg="rosbag" type="play" name="player" output="screen" args="/home/taoranzhang/winter_project/src/rotating_detergent_1_6.bag -r 0.1">
+  <!-- Here we need to put the absolute address to the rosbag file. -->
+  </node>
+</launch>

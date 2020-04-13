@@ -1,14 +1,14 @@
-# Sawyer Picks Objects!
+# Depth from Stereo!
 ## Taoran Zhang
 ****
 ## Project Overview
-This ROS Melodic package allows a Sawyer robot to sense the distance to an object with a specific color and pick it up.
+This ROS Melodic package realizes generating disparity map from the data obtained on the internet, and then uses the same idea to get the distance from the cameras to a red ball.
 
 ****
-## Project Structure and difficulties
-This project can be devided into two main parts. One is vision part, which gives the Swayer the ability to see where the target object is. The other is the picking part, this is performed by tajectory planning. 
+## Project Structure and difficulties/restrictions
+This project can be devided into two parts. One is disparity generating using rosbag from the internet, which gives the feel of how stereo vision works. The other is to implement the same idea to find the depth from the cameras to a red ball.
 
-The main difficulty is that the built-in camera on Sawyer is a RGB camera, which doesn't have the ability to sense the distance from the camera to an object. This project tries to use the disparity between two different views to calculate the distance(depth).
+The main difficulty is that here I tried to use one camera to get the depth value. Therefore 2 images from 2 different perspectives from the same camera are needed to generate disparity so that depth can be calculated. The biggest restriction for my project is that the 2 camera positions must be aligned in the same plane. Also they shouldn't be too far apart since both of them should have the object(red ball) in the field of view.
 
 ## Methodology
 The idea behind this multiview methodology is pretty simple, which can be better illustrated by the graph below:
@@ -23,16 +23,38 @@ Then the depth can be calculated from the formula:
 
 Where disparity is the distance between points in image plane corresponding to the scene point 3D and their camera center. B is the distance between two cameras(which can be obtained by the movement of the Sawyer) and f is the focal length of camera(obtained by calibration). In short, above equation says that the depth of a point in a scene is inversely proportional to the difference in distance of corresponding image points and their camera centers. With this information, we can derive the depth of all pixels in an image.
 
-## Nodes
+## Launchfile
+
+### disparity.launch
+This launch file simply executes a rosbag file found online as an example to get the feel of how disparity map works. Source: ![Choosing Good Stereo Parameters](http://wiki.ros.org/stereo_image_proc/Tutorials/ChoosingGoodStereoParameters)
+
+One thing to note before executing is that we need to specify the absolute path to the rosbag file for it to be properly played.
+
+Needed packages are: [dynamic_reconfigure](http://wiki.ros.org/dynamic_reconfigure), [image_view](http://wiki.ros.org/image_view) and [stereo_image_proc](http://wiki.ros.org/stereo_image_proc).
+
+
+
+## Scripts
 
 ### shoot.py
-This node's job is to take pictures when the Sawyer finished moving to a specific position.       
+This script's job is to take pictures of the chessboard to calibrate the camera.       
 
 ### depthsensing.py
-This is the computer vision node that reads in two images captured from different angles, extracts the center of the target object in each image, calculates the distance in pixals, and finally plugs the result into the formula and get the depth.
+This script reads in two images captured from different angles, extracts the center of the target object in each image, calculates the distance in pixals, and finally plugs the result into the formula and get the depth.
 
-The depthsensing node also used the camera matrices provided from the calibration.py script in the scripts directory.  With this script, you can load about 15 images from that camera with a grided image in them and it will print the camera matrices to the screen, which were saved in the depthsensing node.  These camera matrices would have to be updated for each camera.
+### calibration.py
+The depthsensing.py scipt uses data obtained from this script. With this script, you can load about 10 images from that camera with a grided image in them and it will print the camera matrices to the screen, which were saved for later use. These camera matrices would have to be updated for each camera.
 
 
-## Testing using webcam
-Needed packages: cv_camera camera_calibration image_proc stereo_image_proc image_view dynamic_reconfigure
+## Results
+Here is a video of generating disparity map:
+
+[![Watch the video](media/thumb.jpg)](https://youtu.be/PSwT8iZeyXY)
+
+![Example of depthsensing](media/depth_from_stereo_disparity.png)
+
+This is the processed image from which disparity is obtained.
+
+![Example of result](media/result.png)
+
+This is the depth in mm, which is pretty accurate comparing to tape measurement.
